@@ -10,6 +10,7 @@ function gerarFaturaStr (fatura, pecas) {
   
     for (let apre of fatura.apresentacoes) {
       const peca = pecas[apre.id];
+      function calcularTotalApresentacao(apre, peca) {
       let total = 0;
   
       switch (peca.tipo) {
@@ -28,6 +29,7 @@ function gerarFaturaStr (fatura, pecas) {
         break;
       default:
           throw new Error(`Peça desconhecia: ${peca.tipo}`);
+      return total;
       }
   
       // créditos para próximas contratações
@@ -39,11 +41,12 @@ function gerarFaturaStr (fatura, pecas) {
       faturaStr += `  ${peca.nome}: ${formato(total/100)} (${apre.audiencia} assentos)\n`;
       totalFatura += total;
     }
+    let total = calcularTotalApresentacao(apre, peca);
     faturaStr += `Valor total: ${formato(totalFatura/100)}\n`;
     faturaStr += `Créditos acumulados: ${creditos} \n`;
     return faturaStr;
   }
-
+}
 const faturas = JSON.parse(readFileSync('./faturas.json'));
 const pecas = JSON.parse(readFileSync('./pecas.json'));
 const faturaStr = gerarFaturaStr(faturas, pecas);
