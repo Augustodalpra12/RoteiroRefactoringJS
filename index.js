@@ -35,18 +35,29 @@ function gerarFaturaStr (fatura, pecas) {
           throw new Error(`Peça desconhecia: ${getPeca(apre).tipo}`);
       return total;
       }
-  
-      // créditos para próximas contratações
-      creditos += Math.max(apre.audiencia - 30, 0);
-      if (getPeca(apre).tipo === "comedia") 
-         creditos += Math.floor(apre.audiencia / 5);
-  
       // mais uma linha da fatura
       faturaStr += `  ${getPeca(apre).nome}: ${formato(total/100)} (${apre.audiencia} assentos)\n`;
       totalFatura += total;
     }
+    // créditos para próximas contratações
+    function calcularCredito(apre) {
+      let creditos = 0;
+      creditos += Math.max(apre.audiencia - 30, 0);
+      if (getPeca(apre).tipo === "comedia") 
+        creditos += Math.floor(apre.audiencia / 5);
+        return creditos; 
+    }
+
+    function formatarMoeda(valor) {
+      return new Intl.NumberFormat("pt-BR",
+        { style: "currency", currency: "BRL",
+          minimumFractionDigits: 2 }).format(valor/100);
+    }
+
+    let formatado = formatarMoeda(totalFatura);
+    let creditos = calcularCredito(apre);
     let total = calcularTotalApresentacao(apre);
-    faturaStr += `Valor total: ${formato(totalFatura/100)}\n`;
+    faturaStr += `Valor total: ${formatado}\n`;
     faturaStr += `Créditos acumulados: ${creditos} \n`;
     return faturaStr;
   }
